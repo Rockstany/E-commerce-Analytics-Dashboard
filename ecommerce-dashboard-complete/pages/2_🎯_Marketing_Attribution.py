@@ -35,7 +35,7 @@ st.markdown("### Track which campaigns and channels drive revenue")
 def load_data():
     """Load session attribution data"""
     try:
-        df = pd.read_csv('data/session_attribution.csv')
+        df = pd.read_csv('aggregated_data/session_attribution.csv')
         df['date'] = pd.to_datetime(df['date'])
         return df
     except FileNotFoundError:
