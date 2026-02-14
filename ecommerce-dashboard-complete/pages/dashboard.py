@@ -500,6 +500,12 @@ def page_conversion_funnel(data, filters):
     cart_rate = (cart_adds / total_sessions * 100) if total_sessions > 0 else 0
     purchase_rate = (purchases / total_sessions * 100) if total_sessions > 0 else 0
     cart_to_purchase_rate = (purchases / cart_adds * 100) if cart_adds > 0 else 0
+
+    # Calculate drop-off percentages
+    drop_off_1 = 100 - product_view_rate
+    drop_off_2 = product_view_rate - cart_rate
+    drop_off_3 = cart_rate - purchase_rate
+
     
     # FUNNEL VISUALIZATION
     st.markdown("---")
@@ -541,38 +547,6 @@ def page_conversion_funnel(data, filters):
             "100%"
         )
         
-        drop_off_1 = 100 - product_view_rate
-        st.metric(
-            "Product Views",
-            f"{product_views:,}",
-            f"{product_view_rate:.1f}%",
-            delta=f"-{drop_off_1:.1f}% drop-off" if drop_off_1 > 0 else None,
-            delta_color="inverse"
-        )
-        
-        drop_off_2 = product_view_rate - cart_rate
-        st.metric(
-            "Add to Cart",
-            f"{cart_adds:,}",
-            f"{cart_rate:.1f}%",
-            delta=f"-{drop_off_2:.1f}% drop-off" if drop_off_2 > 0 else None,
-            delta_color="inverse"
-        )
-        
-        drop_off_3 = cart_rate - purchase_rate
-        st.metric(
-            "Purchase",
-            f"{purchases:,}",
-            f"{purchase_rate:.1f}%",
-            delta=f"-{drop_off_3:.1f}% drop-off" if drop_off_3 > 0 else None,
-            delta_color="inverse"
-        )
-        
-        st.markdown("---")
-        st.metric(
-            "🎯 Cart → Purchase",
-            f"{cart_to_purchase_rate:.1f}%"
-        )
     
     # TIME METRICS
     st.markdown("---")
