@@ -837,20 +837,18 @@ def create_user_lifetime_metrics(users_df, orders_df):
         'avg_order_value'
     ]
     
-    # Convert dates to date format (remove time)
-    user_metrics['first_order_date'] = user_metrics['first_order_date'].dt.date
-    user_metrics['last_order_date'] = user_metrics['last_order_date'].dt.date
-    
     # Round monetary values
     user_metrics['total_revenue'] = user_metrics['total_revenue'].round(2)
     user_metrics['avg_order_value'] = user_metrics['avg_order_value'].round(2)
     
-    # Calculate days since last order
+    # Calculate days since last order (BEFORE converting to date format)
     log_message("  Calculating recency...")
     today = pd.Timestamp(datetime.now().date())
-    user_metrics['last_order_date_ts'] = pd.to_datetime(user_metrics['last_order_date'])
-    user_metrics['days_since_last_order'] = (today - user_metrics['last_order_date_ts']).dt.days
-    user_metrics.drop('last_order_date_ts', axis=1, inplace=True)
+    user_metrics['days_since_last_order'] = (today - user_metrics['last_order_date']).dt.days
+    
+    # NOW convert dates to date format (remove time) for cleaner output
+    user_metrics['first_order_date'] = user_metrics['first_order_date'].dt.date
+    user_metrics['last_order_date'] = user_metrics['last_order_date'].dt.date
     
     # RFM SCORING
     log_message("  Calculating RFM scores...")
