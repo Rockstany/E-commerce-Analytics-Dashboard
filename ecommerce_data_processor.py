@@ -63,8 +63,8 @@ class Config:
     END_DATE = None
     
     # Date format used across all output columns
-    # DD/MM/YYYY HH:MM:SS
-    DATE_FORMAT = '%d/%m/%Y %H:%M:%S'
+    # DD/MM/YYYY
+    DATE_FORMAT = '%d/%m/%Y'
 
     # Create directories if they don't exist
     @staticmethod
