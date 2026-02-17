@@ -574,3 +574,162 @@ Aggregated files saved to: aggregated_data/
 [2026-02-17 13:08:25] 
 Aggregated files saved to: aggregated_data/
 [2026-02-17 13:08:25] ============================================================
+[2026-02-17 13:25:21] 
+============================================================
+[2026-02-17 13:25:21] E-COMMERCE DATA AGGREGATION PIPELINE
+[2026-02-17 13:25:21] ============================================================
+[2026-02-17 13:25:21] Start time: 2026-02-17 13:25:21
+[2026-02-17 13:25:21] ============================================================
+[2026-02-17 13:25:21] STARTING DATA LOAD
+[2026-02-17 13:25:21] ============================================================
+[2026-02-17 13:25:21] 
+1. Loading user_table.csv...
+[2026-02-17 13:25:22] ✓ Loaded user_table.csv: 102435 rows
+[2026-02-17 13:25:22] 
+2. Loading session_table.csv...
+[2026-02-17 13:25:22] ✓ Loaded session_table.csv: 130980 rows
+[2026-02-17 13:25:22] 
+3. Loading order_table.csv...
+[2026-02-17 13:25:22] ✓ Loaded order_table.csv: 11206 rows
+[2026-02-17 13:25:22] 
+4. Loading order_line_item_table.csv...
+[2026-02-17 13:25:23] ✓ Loaded order_line_item_table.csv: 22406 rows
+[2026-02-17 13:25:23] 
+5. Loading add_to_cart_table.csv...
+[2026-02-17 13:25:23] ✓ Loaded add_to_cart_table.csv: 25133 rows
+[2026-02-17 13:25:23] 
+6. Loading pageview_table.csv...
+[2026-02-17 13:25:24] ✓ Loaded pageview_table.csv: 354456 rows
+[2026-02-17 13:25:24] 
+7. Loading scroll_table.csv...
+[2026-02-17 13:25:25] ✓ Loaded scroll_table.csv: 292106 rows
+[2026-02-17 13:25:25] 
+8. Loading click_table.csv...
+[2026-02-17 13:25:26] ✓ Loaded click_table.csv: 204752 rows
+[2026-02-17 13:25:26] 
+============================================================
+[2026-02-17 13:25:26] DATA LOAD COMPLETE
+[2026-02-17 13:25:26] ============================================================
+[2026-02-17 13:25:26] 
+============================================================
+[2026-02-17 13:25:26] CREATING: daily_business_metrics
+[2026-02-17 13:25:26] ============================================================
+[2026-02-17 13:25:26]   Calculating total revenue...
+[2026-02-17 13:25:26]   Calculating total orders...
+[2026-02-17 13:25:26]   Calculating total sessions...
+[2026-02-17 13:25:26]   Calculating total users...
+[2026-02-17 13:25:27]   Calculating conversion rate...
+[2026-02-17 13:25:27]   Calculating average order value...
+[2026-02-17 13:25:27]   Calculating new vs repeat customers...
+[2026-02-17 13:25:27]   Combining metrics...
+[2026-02-17 13:25:27] ✓ Created 135046 daily records
+[2026-02-17 13:25:27]   Date range: 01/01/2025 00:03:04 to 31/10/2025 23:56:12
+[2026-02-17 13:25:27]   Total revenue in dataset: $2,193,168.12
+[2026-02-17 13:25:27] 
+============================================================
+[2026-02-17 13:25:27] CREATING: session_attribution
+[2026-02-17 13:25:27] ============================================================
+[2026-02-17 13:25:27]   Merging sessions with orders...
+[2026-02-17 13:25:28]   Calculating conversion flags...
+[2026-02-17 13:25:28]   Selecting columns...
+[2026-02-17 13:25:28] ✓ Created 130980 session records
+[2026-02-17 13:25:28]   Converted sessions: 10050
+[2026-02-17 13:25:28]   Conversion rate: 7.67%
+[2026-02-17 13:25:28]   Total attributed revenue: $4,990,378.16
+[2026-02-17 13:25:28] 
+============================================================
+[2026-02-17 13:25:28] CREATING: session_funnel
+[2026-02-17 13:25:28] ============================================================
+[2026-02-17 13:25:28]   Building funnel base...
+[2026-02-17 13:25:28]   Checking product views...
+[2026-02-17 13:25:28]   Checking cart additions...
+[2026-02-17 13:25:28]   Checking orders...
+[2026-02-17 13:25:28]   Calculating time metrics...
+[2026-02-17 13:25:28] ✓ Created 130980 session funnel records
+[2026-02-17 13:25:28]   Funnel breakdown:
+[2026-02-17 13:25:28]     Sessions: 130980 (100.0%)
+[2026-02-17 13:25:28]     Product Views: 0 (0.0%)
+[2026-02-17 13:25:28]     Cart Adds: 22595 (17.3%)
+[2026-02-17 13:25:28]     Orders: 10050 (7.7%)
+[2026-02-17 13:25:28] 
+============================================================
+[2026-02-17 13:25:28] CREATING: product_performance_daily
+[2026-02-17 13:25:28] ============================================================
+[2026-02-17 13:25:28]   Aggregating order data...
+[2026-02-17 13:25:29]   Adding cart data...
+[2026-02-17 13:25:29] ✓ Created 8742 product-day records
+[2026-02-17 13:25:29]   Unique products: 4
+[2026-02-17 13:25:29]   Date range: 01/01/2025 00:46:00 to 12/12/2025 23:54:00
+[2026-02-17 13:25:29]   Total revenue: $3,661,620.28
+[2026-02-17 13:25:29]   Top 5 products by revenue:
+[2026-02-17 13:25:29]     Video Doorbell Pro 2: $1,418,443.26
+[2026-02-17 13:25:29]     Ring Alarm 8-piece: $1,373,445.06
+[2026-02-17 13:25:29]     Stick Up Cam Battery: $553,944.60
+[2026-02-17 13:25:29]     Indoor Cam (2nd Gen): $315,787.36
+[2026-02-17 13:25:29] 
+============================================================
+[2026-02-17 13:25:29] CREATING: user_lifetime_metrics
+[2026-02-17 13:25:29] ============================================================
+[2026-02-17 13:25:29]   Calculating user metrics...
+[2026-02-17 13:25:29]   Calculating recency...
+[2026-02-17 13:25:29]   Calculating RFM scores...
+[2026-02-17 13:25:29]   Assigning customer segments...
+[2026-02-17 13:25:29] ✓ Created 10853 user records
+[2026-02-17 13:25:29]   Total users: 10853
+[2026-02-17 13:25:29]   Total revenue (all users): $5,553,264.00
+[2026-02-17 13:25:29]   Average LTV per user: $511.68
+[2026-02-17 13:25:29]   Customer segment breakdown:
+[2026-02-17 13:25:29]     Lost: 7247 (66.8%)
+[2026-02-17 13:25:29]     Needs Attention: 2166 (20.0%)
+[2026-02-17 13:25:29]     New Customer: 1355 (12.5%)
+[2026-02-17 13:25:29]     Potential Loyalist: 78 (0.7%)
+[2026-02-17 13:25:29]     At Risk: 7 (0.1%)
+[2026-02-17 13:25:29] 
+============================================================
+[2026-02-17 13:25:29] CREATING: page_engagement_metrics
+[2026-02-17 13:25:29] ============================================================
+[2026-02-17 13:25:30]   Aggregating pageview data...
+[2026-02-17 13:25:32]   Adding scroll data...
+[2026-02-17 13:25:33]   Adding click data...
+[2026-02-17 13:25:35] ✓ Created 354205 page-day records
+[2026-02-17 13:25:35]   Unique pages: 8
+[2026-02-17 13:25:35]   Total pageviews: 354,456
+[2026-02-17 13:25:35]   Top 5 pages by pageviews:
+[2026-02-17 13:25:35]     /category/security-cameras: 52,353 views
+[2026-02-17 13:25:35]     /checkout/thankyou: 52,179 views
+[2026-02-17 13:25:35]     /checkout/payment: 52,141 views
+[2026-02-17 13:25:35]     /cart: 51,783 views
+[2026-02-17 13:25:35]     /products/ring-alarm-8-piece: 36,779 views
+[2026-02-17 13:25:35] 
+============================================================
+[2026-02-17 13:25:35] CREATING: coupon_performance
+[2026-02-17 13:25:35] ============================================================
+[2026-02-17 13:25:35]   Aggregating coupon data...
+[2026-02-17 13:25:35] ✓ Created 4402 coupon-day records
+[2026-02-17 13:25:35]   Unique coupons: 3
+[2026-02-17 13:25:35]   Total discount given: $44,720.00
+[2026-02-17 13:25:35]   Total revenue with coupons: $2,193,168.12
+[2026-02-17 13:25:35]   Top 5 coupons by usage:
+[2026-02-17 13:25:35]     RING20: 1501 uses, $30,020.00 discount
+[2026-02-17 13:25:35]     HOLIDAY10: 1470 uses, $14,700.00 discount
+[2026-02-17 13:25:35]     NO_COUPON: 1448 uses, $0.00 discount
+[2026-02-17 13:25:35] 
+============================================================
+[2026-02-17 13:25:35] SAVING AGGREGATED TABLES
+[2026-02-17 13:25:35] ============================================================
+[2026-02-17 13:25:35] ✓ Saved: daily_business_metrics.csv (135046 rows)
+[2026-02-17 13:25:36] ✓ Saved: session_attribution.csv (130980 rows)
+[2026-02-17 13:25:37] ✓ Saved: session_funnel.csv (130980 rows)
+[2026-02-17 13:25:37] ✓ Saved: product_performance_daily.csv (8742 rows)
+[2026-02-17 13:25:37] ✓ Saved: user_lifetime_metrics.csv (10853 rows)
+[2026-02-17 13:25:38] ✓ Saved: page_engagement_metrics.csv (354205 rows)
+[2026-02-17 13:25:38] ✓ Saved: coupon_performance.csv (4402 rows)
+[2026-02-17 13:25:38] 
+============================================================
+[2026-02-17 13:25:38] PIPELINE COMPLETE
+[2026-02-17 13:25:38] ============================================================
+[2026-02-17 13:25:38] End time: 2026-02-17 13:25:38
+[2026-02-17 13:25:38] Duration: 16.90 seconds
+[2026-02-17 13:25:38] 
+Aggregated files saved to: aggregated_data/
+[2026-02-17 13:25:38] ============================================================

@@ -27,7 +27,7 @@ HOW TO MODIFY:
 - Each function has comments explaining what can be changed
 
 AUTHOR: Data Engineering Team
-LAST UPDATED: 2026-02-13
+LAST UPDATED: 2026-02-17
 """
 
 import pandas as pd
@@ -62,6 +62,10 @@ class Config:
     START_DATE = None
     END_DATE = None
     
+    # Date format used across all output columns
+    # DD/MM/YYYY HH:MM:SS
+    DATE_FORMAT = '%d/%m/%Y %H:%M:%S'
+
     # Create directories if they don't exist
     @staticmethod
     def setup_directories():
@@ -287,9 +291,9 @@ def create_daily_business_metrics(orders_df, sessions_df, users_df):
         log_message("⚠ Skipping - missing required data")
         return None
     
-    # Extract date from timestamp
-    orders_df['date'] = orders_df['time'].dt.date
-    sessions_df['date'] = sessions_df['time'].dt.date
+    # Extract date from timestamp — format: DD/MM/YYYY HH:MM:SS
+    orders_df['date'] = orders_df['time'].dt.strftime(Config.DATE_FORMAT)
+    sessions_df['date'] = sessions_df['time'].dt.strftime(Config.DATE_FORMAT)
     
     # Initialize metrics dictionary
     metrics = {}
@@ -427,8 +431,8 @@ def create_session_attribution(sessions_df, orders_df):
         suffixes=('_session', '_order')
     )
     
-    # Extract date from session time
-    merged['date'] = merged['time_session'].dt.date
+    # Extract date from session time — format: DD/MM/YYYY HH:MM:SS
+    merged['date'] = merged['time_session'].dt.strftime(Config.DATE_FORMAT)
     
     # Create converted flag
     # If order_id exists (not NULL) → converted = 1 (True)
@@ -531,7 +535,9 @@ def create_session_funnel(sessions_df, pageviews_df, cart_df, orders_df):
     # Start with all sessions
     log_message("  Building funnel base...")
     funnel = sessions_df[['session_id', 'user_id', 'time']].copy()
-    funnel['date'] = funnel['time'].dt.date
+
+    # Extract date from session time — format: DD/MM/YYYY HH:MM:SS
+    funnel['date'] = funnel['time'].dt.strftime(Config.DATE_FORMAT)
     
     # STEP 1: HAD PAGEVIEW (always True since session = at least 1 pageview)
     funnel['had_pageview'] = 1
@@ -672,8 +678,8 @@ def create_product_performance_daily(order_items_df, cart_df, pageviews_df):
         log_message("⚠ Skipping - missing order items data")
         return None
     
-    # Extract date from timestamp
-    order_items_df['date'] = order_items_df['time'].dt.date
+    # Extract date from timestamp — format: DD/MM/YYYY HH:MM:SS
+    order_items_df['date'] = order_items_df['time'].dt.strftime(Config.DATE_FORMAT)
     
     # GROUP BY: date + product_name
     # This creates one row per product per day
@@ -703,7 +709,8 @@ def create_product_performance_daily(order_items_df, cart_df, pageviews_df):
     # How many times was this product added to cart?
     log_message("  Adding cart data...")
     if cart_df is not None:
-        cart_df['date'] = cart_df['time'].dt.date
+        # Extract date from timestamp — format: DD/MM/YYYY HH:MM:SS
+        cart_df['date'] = cart_df['time'].dt.strftime(Config.DATE_FORMAT)
         cart_adds = cart_df.groupby(['date', 'product_name'])['event_id'].count().reset_index()
         cart_adds.columns = ['date', 'product_name', 'times_added_to_cart']
         
@@ -740,8 +747,8 @@ def create_product_performance_daily(order_items_df, cart_df, pageviews_df):
     # Show top 5 products
     top_products = product_metrics.groupby('product_name')['total_revenue'].sum().nlargest(5)
     log_message("  Top 5 products by revenue:")
-    for product, revenue in top_products.items():
-        log_message(f"    {product}: ${revenue:,.2f}")
+    for product, rev in top_products.items():
+        log_message(f"    {product}: ${rev:,.2f}")
     
     return product_metrics
 
@@ -841,14 +848,14 @@ def create_user_lifetime_metrics(users_df, orders_df):
     user_metrics['total_revenue'] = user_metrics['total_revenue'].round(2)
     user_metrics['avg_order_value'] = user_metrics['avg_order_value'].round(2)
     
-    # Calculate days since last order (BEFORE converting to date format)
+    # Calculate days since last order (BEFORE converting to formatted string)
     log_message("  Calculating recency...")
     today = pd.Timestamp(datetime.now().date())
     user_metrics['days_since_last_order'] = (today - user_metrics['last_order_date']).dt.days
     
-    # NOW convert dates to date format (remove time) for cleaner output
-    user_metrics['first_order_date'] = user_metrics['first_order_date'].dt.date
-    user_metrics['last_order_date'] = user_metrics['last_order_date'].dt.date
+    # Convert dates to DD/MM/YYYY HH:MM:SS format for output
+    user_metrics['first_order_date'] = user_metrics['first_order_date'].dt.strftime(Config.DATE_FORMAT)
+    user_metrics['last_order_date'] = user_metrics['last_order_date'].dt.strftime(Config.DATE_FORMAT)
     
     # RFM SCORING
     log_message("  Calculating RFM scores...")
@@ -871,7 +878,7 @@ def create_user_lifetime_metrics(users_df, orders_df):
     user_metrics['rfm_monetary_score'] = pd.cut(
         user_metrics['total_revenue'],
         bins=[0, 50, 200, 500, 1000, float('inf')],
-         labels=[1, 2, 3, 4, 5]
+        labels=[1, 2, 3, 4, 5]
     ).fillna(1).astype(int)
     
     # Combine RFM scores into single string (e.g., "555" = Champion)
@@ -1002,8 +1009,8 @@ def create_page_engagement_metrics(pageviews_df, scrolls_df, clicks_df):
         log_message("⚠ Skipping - missing pageview data")
         return None
     
-    # Extract date
-    pageviews_df['date'] = pageviews_df['time'].dt.date
+    # Extract date from timestamp — format: DD/MM/YYYY HH:MM:SS
+    pageviews_df['date'] = pageviews_df['time'].dt.strftime(Config.DATE_FORMAT)
     
     log_message("  Aggregating pageview data...")
     
@@ -1028,7 +1035,8 @@ def create_page_engagement_metrics(pageviews_df, scrolls_df, clicks_df):
     # How far down the page do users scroll on average?
     log_message("  Adding scroll data...")
     if scrolls_df is not None:
-        scrolls_df['date'] = scrolls_df['time'].dt.date
+        # Extract date from timestamp — format: DD/MM/YYYY HH:MM:SS
+        scrolls_df['date'] = scrolls_df['time'].dt.strftime(Config.DATE_FORMAT)
         
         # Calculate average scroll percent per page per day
         avg_scroll = scrolls_df.groupby(['date', 'path'])['scroll_percent'].mean().reset_index()
@@ -1047,7 +1055,8 @@ def create_page_engagement_metrics(pageviews_df, scrolls_df, clicks_df):
     # How many clicks happened on this page?
     log_message("  Adding click data...")
     if clicks_df is not None:
-        clicks_df['date'] = clicks_df['time'].dt.date
+        # Extract date from timestamp — format: DD/MM/YYYY HH:MM:SS
+        clicks_df['date'] = clicks_df['time'].dt.strftime(Config.DATE_FORMAT)
         
         # Count clicks per page per day
         clicks_count = clicks_df.groupby(['date', 'path'])['event_id'].count().reset_index()
@@ -1118,8 +1127,8 @@ def create_coupon_performance(orders_df):
         log_message("⚠ Skipping - missing order data or coupon field")
         return None
     
-    # Extract date
-    orders_df['date'] = orders_df['time'].dt.date
+    # Extract date from timestamp — format: DD/MM/YYYY HH:MM:SS
+    orders_df['date'] = orders_df['time'].dt.strftime(Config.DATE_FORMAT)
     
     # Fill NULL coupon codes with 'NO_COUPON'
     # WHY: Makes it clear these are orders without discounts
