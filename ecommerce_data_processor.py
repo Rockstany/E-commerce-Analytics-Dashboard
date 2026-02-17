@@ -858,21 +858,21 @@ def create_user_lifetime_metrics(users_df, orders_df):
         user_metrics['days_since_last_order'],
         bins=[-1, 30, 90, 180, 365, float('inf')],
         labels=[5, 4, 3, 2, 1]
-    ).astype(int)
+    ).fillna(1).astype(int)
     
     # F = Frequency Score (1-5, where 5 is best/most orders)
     user_metrics['rfm_frequency_score'] = pd.cut(
         user_metrics['total_orders'],
         bins=[0, 1, 2, 4, 9, float('inf')],
         labels=[1, 2, 3, 4, 5]
-    ).astype(int)
+    ).fillna(1).astype(int)
     
     # M = Monetary Score (1-5, where 5 is best/highest spend)
     user_metrics['rfm_monetary_score'] = pd.cut(
         user_metrics['total_revenue'],
         bins=[0, 50, 200, 500, 1000, float('inf')],
-        labels=[1, 2, 3, 4, 5]
-    ).astype(int)
+         labels=[1, 2, 3, 4, 5]
+    ).fillna(1).astype(int)
     
     # Combine RFM scores into single string (e.g., "555" = Champion)
     user_metrics['rfm_score'] = (
